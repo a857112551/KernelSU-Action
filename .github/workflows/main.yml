@@ -8,14 +8,14 @@ on:
         type: boolean
         default: false
 
-  schedule:
-    - cron: "50 9,21 * * *"
+  # schedule:
+  #   - cron: "50 9,21 * * *"
 
 env:
-  kernel_repository: PixelExperience-Devices/kernel_xiaomi_polaris
-  kernel_branch: thirteen
-  device: dipper
-  defconfig: dipper_defconfig
+  kernel_repository: a857112551/xiaomi_xaga_kernel
+  kernel_branch: mglru
+  device: xaga
+  defconfig: xaga_defconfig
   use_aosp_clang: false
   clang_version: 15
 
