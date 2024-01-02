@@ -20,42 +20,42 @@ env:
   clang_version: 15
 
 jobs:
-  check_kernelsu_update:
-    name: check kernelsu update
-    runs-on: ubuntu-latest
-    steps:
-      - name: install common package
-        run: |
-          sudo apt update
-          sudo apt install -y curl jq
+  # check_kernelsu_update:
+  #   name: check kernelsu update
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: install common package
+  #       run: |
+  #         sudo apt update
+  #         sudo apt install -y curl jq
 
-      - name: check kernelsu release
-        id: check_kernelsu_release
-        run: |
-          kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
-          local_release=`curl --header 'authorization: Bearer ${{ github.token }}' https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name`
+  #     - name: check kernelsu release
+  #       id: check_kernelsu_release
+  #       run: |
+  #         kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
+  #         local_release=`curl --header 'authorization: Bearer ${{ github.token }}' https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name`
 
-          echo $kernelsu_release
-          echo $local_release
+  #         echo $kernelsu_release
+  #         echo $local_release
 
-          echo kernelsu_release=$kernelsu_release >> $GITHUB_OUTPUT
-          echo local_release=$local_release >> $GITHUB_OUTPUT
+  #         echo kernelsu_release=$kernelsu_release >> $GITHUB_OUTPUT
+  #         echo local_release=$local_release >> $GITHUB_OUTPUT
 
-    outputs:
-      kernelsu_release: ${{ steps.check_kernelsu_release.outputs.kernelsu_release }}
-      local_release: ${{ steps.check_kernelsu_release.outputs.local_release }}
+  #   outputs:
+  #     kernelsu_release: ${{ steps.check_kernelsu_release.outputs.kernelsu_release }}
+  #     local_release: ${{ steps.check_kernelsu_release.outputs.local_release }}
 
-  build:
-    needs: check_kernelsu_update
-    if: needs.check_kernelsu_update.outputs.kernelsu_release != needs.check_kernelsu_update.outputs.local_release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: install common package
-        run: |
-          sudo apt update
-          sudo apt install -y curl zip unzip git make bc binutils-arm-linux-gnueabi binutils-aarch64-linux-gnu
+  # build:
+    # needs: check_kernelsu_update
+    # if: needs.check_kernelsu_update.outputs.kernelsu_release != needs.check_kernelsu_update.outputs.local_release
+    # runs-on: ubuntu-latest
+    # permissions:
+    #   contents: write
+    # steps:
+    #   - name: install common package
+    #     run: |
+    #       sudo apt update
+    #       sudo apt install -y curl zip unzip git make bc binutils-arm-linux-gnueabi binutils-aarch64-linux-gnu
 
       - name: checkout kernel
         uses: actions/checkout@v3
@@ -113,14 +113,14 @@ jobs:
           PATH=/usr/lib/llvm-$clang_version/bin:$PATH
           echo PATH=$PATH >> $GITHUB_ENV
 
-      - name: setup kernelsu
-        run: |
-          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
-          echo 'CONFIG_KPROBES=y' >> arch/arm64/configs/${{ env.defconfig }}
+      # - name: setup kernelsu
+      #   run: |
+      #     curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+      #     echo 'CONFIG_KPROBES=y' >> arch/arm64/configs/${{ env.defconfig }}
 
-          cd KernelSU
-          # git checkout main
-          git checkout ${{ needs.check_kernelsu_update.outputs.kernelsu_release }}
+      #     cd KernelSU
+      #     # git checkout main
+      #     git checkout ${{ needs.check_kernelsu_update.outputs.kernelsu_release }}
 
       - name: export flags
         run: |
@@ -177,8 +177,8 @@ jobs:
             Kernel:
             https://github.com/${{ env.kernel_repository }}/tree/${{ env.kernel_commit_id }}
 
-            KernelSU:
-            https://github.com/tiann/KernelSU/releases/tag/${{ needs.check_kernelsu_update.outputs.kernelsu_release }}
+            # KernelSU:
+            # https://github.com/tiann/KernelSU/releases/tag/${{ needs.check_kernelsu_update.outputs.kernelsu_release }}
           files: |
             out/arch/arm64/boot/Image*
             AnyKernel3-master/boot.zip
